@@ -1,7 +1,9 @@
 import discord
+import random
 from discord import *
 from discord.ext.commands import Bot
 from discord.utils import get
+import os
 
 PREFIX = "$"
 INVITELINK = "https://discord.gg/VnbX8JH"
@@ -85,3 +87,16 @@ class GFLPBot:
         async def ok(ctx):
             with open("..\\Images\\Misc\\ok.jpg", "rb") as f:
                 await self.client.send_file(ctx.message.channel, f)
+
+        @self.client.command(name='doge',
+                             description='Use at your own risk',
+                             pass_context=True)
+        async def doge(ctx):
+            listOfFile = os.listdir("..\\Images\\Doge")
+            allFiles = list()
+            for entry in listOfFile:
+                fullPath = os.path.join("..\\Images\\Doge", entry)
+                allFiles.append(fullPath)
+
+            with open(str(random.choice(allFiles)), "rb") as image:
+                await self.client.send_file(ctx.message.channel, image)
