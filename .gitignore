@@ -3,6 +3,7 @@
 *.iml
 log.txt
 run.py
+Images
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
