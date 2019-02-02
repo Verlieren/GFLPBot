@@ -61,7 +61,7 @@ class GFLPBot:
                         print("User has blocked bot, no DM sent")
                     return
 
-            if "o tru" in message.content:
+            if "o tru" in message.content or "otru" in message.content:
                 emoji = get(self.client.get_all_emojis(), name='otru')
                 await self.client.add_reaction(message, emoji)
 
