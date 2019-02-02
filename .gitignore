@@ -2,6 +2,7 @@
 *.token
 *.iml
 log.txt
+run.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

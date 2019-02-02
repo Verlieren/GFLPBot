@@ -11,6 +11,7 @@ setup(
     description='',
     scripts=[
         'bin/run',
+        'bin/run.bat',
     ],
     install_requires=[
         'discord',

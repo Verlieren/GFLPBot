@@ -3,8 +3,7 @@ from discord import *
 from discord.ext.commands import Bot
 
 PREFIX = "$"
-InviteLink = "https://discord.gg/VnbX8JH"
-
+INVITELINK = "https://discord.gg/VnbX8JH"
 
 class GFLPBot:
 
@@ -58,10 +57,16 @@ class GFLPBot:
                     print(message.content)
                     print(message.author)
                     try:
-                        await self.client.start_private_message(user=message.author)
-                        await self.client.say(message.author, content=warning_message)
+                        await self.client.send_message(destination=message.author, content=warning_message)
                     except discord.errors.Forbidden:
                         print("User has blocked bot, no DM sent")
 
                 if message.content.startswith(PREFIX):
                     await self.client.process_commands(message)
+
+        @self.client.command(name='invite')
+        async def create_invite():
+
+            response = "Permanent invite link for GainFatLP:\n" + INVITELINK
+            await self.client.say(response)
+
