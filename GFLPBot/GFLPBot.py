@@ -28,7 +28,7 @@ class GFLPBot:
             self.config.set("General", "welcome_channel", "general")
             self.config.set("General", "channels", "general, botspam, dreg-heap")
             self.config.set("General", "spam_channels", "botspam")
-            self.config.set("General", "default_role", "member")
+            self.config.set("General", "default_role", "Member")
             self.config.set("General", "doge_path", "..\\GFLPBot\\Images\\Doge")
             with open("..\\config.ini", "w") as configfile:
                 self.config.write(configfile)
