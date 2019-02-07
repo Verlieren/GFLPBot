@@ -1,3 +1,3 @@
-cd C:\Users\addis\Documents\PyCharmProjects\GFLPBot
+cd %~dp0
 pip install .
 PAUSE
