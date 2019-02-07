@@ -4,7 +4,7 @@
 log.txt
 run.py
 Images
-
+config.ini
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
