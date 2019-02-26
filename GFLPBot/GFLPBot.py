@@ -112,14 +112,16 @@ class GFLPBot:
                              pass_context=True)
         async def doge(ctx):
             if ctx.message.channel.name in self.config.get("General", "spam_channels"):
-                listoffile = os.listdir(self.config.get("General", "doge_path"))
-                allfiles = list()
-                for entry in listoffile:
-                    fullpath = os.path.join(self.config.get("General", "doge_path"), entry)
-                    allfiles.append(fullpath)
-
-                with open(str(random.choice(allfiles)), "rb") as image:
-                    await self.client.send_file(ctx.message.channel, image)
+                disabledmessage = "Sorry, this command is currently disabled."
+                await self.client.say(disabledmessage)
+            # listoffile = os.listdir(self.config.get("General", "doge_path"))
+            # allfiles = list()
+            # for entry in listoffile:
+            #     fullpath = os.path.join(self.config.get("General", "doge_path"), entry)
+            #     allfiles.append(fullpath)
+            #
+            # with open(str(random.choice(allfiles)), "rb") as image:
+            #     await self.client.send_file(ctx.message.channel, image)
             else:
                 warning = "Sorry, {0.mention}, that command is limited to the following channels: `{1}`"
                 channels = self.config.get("General", "spam_channels")
