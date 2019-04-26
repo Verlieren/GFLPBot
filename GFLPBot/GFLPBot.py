@@ -7,9 +7,10 @@ from discord.ext.commands import Bot
 from discord.utils import get
 import os
 import configparser
+import logging
 
 PREFIX = "$"
-
+logging.basicConfig(level=logging.INFO)
 
 class GFLPBot:
 
