@@ -1,5 +1,7 @@
 import discord
 import random
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
 from discord import *
 from discord.ext.commands import Bot
 from discord.utils import get
@@ -27,9 +29,11 @@ class GFLPBot:
             self.config.set("General", "invite_link", "https://discord.gg/VnbX8JH")
             self.config.set("General", "welcome_channel", "general")
             self.config.set("General", "channels", "general, botspam, dreg-heap")
-            self.config.set("General", "spam_channels", "botspam")
+            self.config.set("General", "bot_channels", "botspam")
+            self.config.set("General", "image_channels", "dreg-heap")
             self.config.set("General", "default_role", "Member")
             self.config.set("General", "doge_path", "..\\GFLPBot\\Images\\Doge")
+            self.config.set("General", "restricted_users", "")
             with open("..\\config.ini", "w") as configfile:
                 self.config.write(configfile)
             print("Config file not found, and a new one was generated")
@@ -45,67 +49,97 @@ class GFLPBot:
 
         @self.client.event
         async def on_ready():
-            await self.client.change_presence(game=Game(name="GainFatLP.com"))
-
+            GFLP_activity = Activity(name="GainFatLP.com", url="https://gainfatlp.com/",
+                                     type=discord.ActivityType.playing)
+            await self.client.change_presence(activity=GFLP_activity)
             print('Connected!')
             print('Username: ' + self.client.user.name)
-            print('ID: ' + self.client.user.id)
+            print('ID: ' + str(self.client.user.id))
             print("Current servers:")
 
-            for server in self.client.servers:
+            for server in self.client.guilds:
                 print("{0.name}, ID: {0.id}".format(server))
 
         @self.client.event
         async def on_message(message):
-            warning_message = "Please use the #voice-text channel when you are connected to voice." + \
-                              "This reduces clutter for other users and makes" + \
-                              " it easier for them to follow the chat."
 
-            if message.channel.type != discord.ChannelType.private:
+            image_channel = self.config.get("General", "image_channels")
+            voice_warning = "Please use the #voice-text channel when you are connected to voice." + \
+                            "This reduces clutter for other users and makes " + \
+                            "it easier for them to follow the chat."
+            spam_warning = "Please keep your embedded images and links in the " + image_channel + \
+                           "channel. This reduces clutter for other users.\nIf you believe your message " + \
+                           "was deleted in error, please contact this bot's author: Verlieren#9842"
+            restricted = self.config.get("General", "restricted_users")
 
+            if isinstance(message.channel, discord.TextChannel):
                 if message.author.bot:
+                    print("bot detected, ignoring")
                     return
 
-                role = get(message.author.roles, name="Non-Vocalizer")
+                vocal_role = get(message.author.roles, name="Non-Vocalizer")
 
-                if message.channel.name != "voice-text" and role is not None and message.author.voice.self_mute \
-                        and message.author.voice.voice_channel is not None:
-                    await self.client.delete_message(message)
+                if message.channel.name != "voice-text" and vocal_role is not None \
+                        and message.author.voice is not None and message.author.voice.self_mute:
+
+                    await message.delete()
                     print("\n")
                     print("Message Deleted:")
                     print(message.content)
                     print(message.author)
-                    print(message.timestamp)
+                    print(message.created_at)
                     try:
-                        await self.client.send_message(destination=message.author, content=warning_message)
+                        await message.author.send(content=voice_warning)
                     except discord.errors.Forbidden:
                         print("User has blocked bot, no DM sent")
                     return
 
-            if "o tru" in message.content.lower() or "otru" in message.content.lower():
-                truemoji = get(self.client.get_all_emojis(), name='otru')
-                await self.client.add_reaction(message, truemoji)
+                if message.channel.name not in image_channel and str(message.author.id) in restricted:
+                    contains_url = False
+                    val = URLValidator()
+                    try:
+                        val(message.content)
+                        contains_url = True
+                    except ValidationError:
+                        pass
 
-            if message.content.startswith(PREFIX):
-                await self.client.process_commands(message)
+                    if message.attachments or contains_url or message.embeds:
+                        await message.delete()
+                        print("\n")
+                        print("Message Deleted:")
+                        print(message.content)
+                        print(message.author)
+                        print(message.created_at)
+                        try:
+                            await message.author.send(content=spam_warning)
+                        except discord.errors.Forbidden:
+                            print("User has blocked bot, no DM sent")
+                        return
+
+                if "o tru" in message.content.lower() or "otru" in message.content.lower():
+                    truemoji = get(self.client.emojis, name='otru')
+                    await message.add_reaction(truemoji)
+
+                if message.content.startswith(PREFIX):
+                    await self.client.process_commands(message)
 
         @self.client.command(name='invite')
-        async def create_invite():
+        async def create_invite(ctx):
 
             response = "Permanent invite link for GainFatLP:\n" + self.config.get("General", "invite_link")
-            await self.client.say(response)
+            await ctx.send(response)
 
         @self.client.command(name='ongod',
                              pass_context=True)
         async def on_god(ctx):
             with open("..\\GFLPBot\\Images\\Misc\\on_god.png", "rb") as f:
-                await self.client.send_file(ctx.message.channel, f)
+                await ctx.send(f)
 
         @self.client.command(name='ok',
                              pass_context=True)
         async def ok(ctx):
             with open("..\\GFLPBot\\Images\\Misc\\ok.jpg", "rb") as f:
-                await self.client.send_file(ctx.message.channel, f)
+                await ctx.send(f)
 
         @self.client.command(name='doge',
                              description='Use at your own risk',
@@ -113,7 +147,7 @@ class GFLPBot:
         async def doge(ctx):
             if ctx.message.channel.name in self.config.get("General", "spam_channels"):
                 disabledmessage = "Sorry, this command is currently disabled."
-                await self.client.say(disabledmessage)
+                await ctx.send(disabledmessage)
             # listoffile = os.listdir(self.config.get("General", "doge_path"))
             # allfiles = list()
             # for entry in listoffile:
@@ -125,16 +159,16 @@ class GFLPBot:
             else:
                 warning = "Sorry, {0.mention}, that command is limited to the following channels: `{1}`"
                 channels = self.config.get("General", "spam_channels")
-                await self.client.say(warning.format(ctx.message.author, channels))
+                await ctx.send(warning.format(ctx.message.author, channels))
 
         @self.client.event
         async def on_member_join(member):
             role = get(member.server.roles, name=self.config.get("General", "default_role"))
-            self.client.add_roles(member, role)
+            member.add_roles(role)
             welcome = "{0.mention}, Welcome to GAIN FAT LP!\n".format(member) + \
                       "Make sure to check out our website, https://GainFatLP.com/!"
             welcomechannel = get(member.server.channels, name=self.config.get("General", "welcome_channel"))
-            await self.client.send_message(welcomechannel, welcome)
+            await welcomechannel.send(welcome)
 
 
         # @self.client.command()
