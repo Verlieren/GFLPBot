@@ -74,7 +74,6 @@ class GFLPBot:
 
             if isinstance(message.channel, discord.TextChannel):
                 if message.author.bot:
-                    print("bot detected, ignoring")
                     return
 
                 vocal_role = get(message.author.roles, name="Non-Vocalizer")
@@ -120,6 +119,12 @@ class GFLPBot:
                     truemoji = get(self.client.emojis, name='otru')
                     await message.add_reaction(truemoji)
 
+                if message.author.is_on_mobile():
+                    drool = "\U0001F924"
+                    selfie = "\U0001F933"
+                    await message.add_reaction(drool)
+                    await message.add_reaction(selfie)
+
                 if message.content.startswith(PREFIX):
                     await self.client.process_commands(message)
 
@@ -134,17 +139,24 @@ class GFLPBot:
             for mentioned in ctx.message.mentions:
                 await ctx.channel.send(mentioned.avatar_url)
 
+        @self.client.command(name="restrict")
+        async def restrict(ctx):
+            return
+            # add restrict command
+
         @self.client.command(name='ongod',
                              pass_context=True)
         async def on_god(ctx):
-            with open("..\\GFLPBot\\Images\\Misc\\on_god.png", "rb") as f:
-                await ctx.send(f)
+            embed_image = discord.Embed()
+            embed_image.set_image(url="https://i.imgur.com/2ZFJOQP.png")
+            await ctx.send(embed=embed_image)
 
         @self.client.command(name='ok',
                              pass_context=True)
         async def ok(ctx):
-            with open("..\\GFLPBot\\Images\\Misc\\ok.jpg", "rb") as f:
-                await ctx.send(f)
+            embed_image = discord.Embed()
+            embed_image.set_image(url="https://i.imgur.com/ImZwATF.jpg")
+            await ctx.send(embed=embed_image)
 
         @self.client.command(name='doge',
                              description='Use at your own risk',
