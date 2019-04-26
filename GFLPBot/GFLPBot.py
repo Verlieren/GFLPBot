@@ -129,6 +129,11 @@ class GFLPBot:
             response = "Permanent invite link for GainFatLP:\n" + self.config.get("General", "invite_link")
             await ctx.send(response)
 
+        @self.client.command(name='avatar')
+        async def avatar(ctx):
+            for mentioned in ctx.message.mentions:
+                await ctx.channel.send(mentioned.avatar_url)
+
         @self.client.command(name='ongod',
                              pass_context=True)
         async def on_god(ctx):
