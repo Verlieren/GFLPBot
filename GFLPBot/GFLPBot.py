@@ -120,7 +120,7 @@ class GFLPBot:
                     truemoji = get(self.client.emojis, name='otru')
                     await message.add_reaction(truemoji)
 
-                if message.author.is_on_mobile():
+                if message.author.is_on_mobile() and message.content[0:1].isupper():
                     drool = "\U0001F924"
                     selfie = "\U0001F933"
                     await message.add_reaction(drool)
