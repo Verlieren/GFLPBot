@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='GFLPBot',
-    version='0.2.1',
+    version='0.2.2',
     packages=['GFLPBot'],
     url='',
     license='MIT',

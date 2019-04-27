@@ -69,7 +69,7 @@ class GFLPBot:
                             "This reduces clutter for other users and makes " + \
                             "it easier for them to follow the chat."
             spam_warning = "Please keep your embedded images and links in the " + image_channel + \
-                           "channel. This reduces clutter for other users.\nIf you believe your message " + \
+                           " channel. This reduces clutter for other users.\nIf you believe your message " + \
                            "was deleted in error, please contact this bot's author: Verlieren#9842"
             restricted = self.config.get("General", "restricted_users")
 
@@ -120,7 +120,8 @@ class GFLPBot:
                     truemoji = get(self.client.emojis, name='otru')
                     await message.add_reaction(truemoji)
 
-                if message.author.is_on_mobile() and message.content[0:1].isupper():
+                if message.author.is_on_mobile() and \
+                        (message.content[0:1].isupper() or message.content[0:1].isalpha() is False):
                     drool = "\U0001F924"
                     selfie = "\U0001F933"
                     await message.add_reaction(drool)
@@ -137,8 +138,12 @@ class GFLPBot:
 
         @self.client.command(name='avatar')
         async def avatar(ctx):
+            embed_image = discord.Embed()
             for mentioned in ctx.message.mentions:
-                await ctx.channel.send(mentioned.avatar_url)
+                embed_image.title = mentioned.display_name + "'s avatar"
+                embed_image.colour = Color(0x00E5FF)
+                embed_image.set_image(url=mentioned.avatar_url)
+                await ctx.channel.send(embed=embed_image)
 
         @self.client.command(name="restrict")
         async def restrict(ctx):
@@ -149,6 +154,7 @@ class GFLPBot:
                              pass_context=True)
         async def on_god(ctx):
             embed_image = discord.Embed()
+            embed_image.colour = Color(0x00E5FF)
             embed_image.set_image(url="https://i.imgur.com/2ZFJOQP.png")
             await ctx.send(embed=embed_image)
 
@@ -156,6 +162,7 @@ class GFLPBot:
                              pass_context=True)
         async def ok(ctx):
             embed_image = discord.Embed()
+            embed_image.colour = Color(0x00E5FF)
             embed_image.set_image(url="https://i.imgur.com/ImZwATF.jpg")
             await ctx.send(embed=embed_image)
 
@@ -181,17 +188,25 @@ class GFLPBot:
 
         @self.client.event
         async def on_member_join(member):
-            role = get(member.server.roles, name=self.config.get("General", "default_role"))
-            member.add_roles(role)
-            welcome = "{0.mention}, Welcome to GAIN FAT LP!\n".format(member) + \
-                      "Make sure to check out our website, https://GainFatLP.com/!"
-            welcomechannel = get(member.server.channels, name=self.config.get("General", "welcome_channel"))
-            await welcomechannel.send(welcome)
+            default_role = get(member.guild.roles, name=self.config.get("General", "default_role"))
+            await member.add_roles(default_role)
 
+            welcome_embed = Embed()
+            welcome_embed.colour = Color(0x00E5FF)
+            welcome_embed.set_image(url="https://i.imgur.com/CbnG8Kz.png")
+            welcome_embed.url = "https://gainfatlp.com/"
+            welcome_embed.title = "Welcome to GainFatLP!"
+            welcome_embed.description = "Live a life of prosperity, gradual sustainable income, and continuous LP GAIN!"
+            welcome_text = "{0.mention}, Welcome to GAIN FAT LP!\n".format(member) + \
+                           "Click the link below to visit our website!"
+            welcome_channel = get(member.guild.channels, name=self.config.get("General", "welcome_channel"))
+            await welcome_channel.send(welcome_text, embed=welcome_embed)
 
-        # @self.client.command()
-        # async def joined(name):
-        #     """Says when a member joined."""
-        #     selected = ""  #
-        #     await self.client.send_message('{0.name} joined in {0.joined_at}'.format(selected))
+        @self.client.command()
+        async def joined(ctx):
+            joined_embed = Embed()
+            joined_embed.colour = Color(0x00E5FF)
+            for mentioned in ctx.message.mentions:
+                joined_embed.title = '{0.display_name} joined at {0.joined_at}'.format(mentioned)
+                await ctx.channel.send(embed=joined_embed)
 
