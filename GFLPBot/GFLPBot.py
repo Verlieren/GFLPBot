@@ -186,7 +186,7 @@ class GFLPBot:
 
             welcome_embed = Embed()
             welcome_embed.colour = Color(0x00E5FF)
-            welcome_embed.set_image(url="https://i.imgur.com/CbnG8Kz.png")
+            welcome_embed.set_image(url="https://i.imgur.com/IMya4ln.png")
             welcome_embed.url = "https://gainfatlp.com/"
             welcome_embed.title = "Welcome to GainFatLP!"
             welcome_embed.description = "Live a life of prosperity, gradual sustainable income, and continuous LP GAIN!"
