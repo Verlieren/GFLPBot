@@ -12,6 +12,7 @@ import logging
 PREFIX = "$"
 logging.basicConfig(level=logging.INFO)
 
+
 class GFLPBot:
 
     def __init__(self):
@@ -33,8 +34,10 @@ class GFLPBot:
             self.config.set("General", "bot_channels", "botspam")
             self.config.set("General", "image_channels", "dreg-heap")
             self.config.set("General", "default_role", "Member")
+            self.config.set("General", "esports_role", "Esports Watcher")
             self.config.set("General", "doge_path", "..\\GFLPBot\\Images\\Doge")
             self.config.set("General", "restricted_users", "")
+
             with open("..\\config.ini", "w") as configfile:
                 self.config.write(configfile)
             print("Config file not found, and a new one was generated")
@@ -138,26 +141,19 @@ class GFLPBot:
                 embed_image.set_image(url=mentioned.avatar_url)
                 await ctx.channel.send(embed=embed_image)
 
-        @self.client.command(name="restrict")
-        async def restrict(ctx):
-            return
-            # add restrict command
-
-        @self.client.command(name='ongod',
-                             pass_context=True)
-        async def on_god(ctx):
-            embed_image = discord.Embed()
-            embed_image.colour = Color(0x00E5FF)
-            embed_image.set_image(url="https://i.imgur.com/2ZFJOQP.png")
-            await ctx.send(embed=embed_image)
-
-        @self.client.command(name='ok',
-                             pass_context=True)
-        async def ok(ctx):
-            embed_image = discord.Embed()
-            embed_image.colour = Color(0x00E5FF)
-            embed_image.set_image(url="https://i.imgur.com/ImZwATF.jpg")
-            await ctx.send(embed=embed_image)
+        @self.client.command(name="esports")
+        async def esports(ctx):
+            esports_role = get(ctx.author.guild.roles, name=self.config.get("General", "esports_role"))
+            role_check = get(ctx.author.roles, name=self.config.get("General", "esports_role"))
+            if role_check is None:
+                await ctx.author.add_roles(esports_role)
+                message = "{0.mention}, the {1.name} role has been added.".format(ctx.author, esports_role)
+                await ctx.send(message)
+            elif role_check is not None:
+                await ctx.author.remove_roles(esports_role)
+                message = "{0.mention}, your {1.name} role" \
+                          " has been removed per your request.".format(ctx.author, esports_role)
+                await ctx.send(message)
 
         @self.client.command(name='doge',
                              description='Use at your own risk',
