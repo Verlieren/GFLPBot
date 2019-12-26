@@ -73,7 +73,7 @@ class GFLPBot:
                             "it easier for them to follow the chat."
             spam_warning = "Please keep your embedded images and links in the " + image_channel + \
                            " channel. This reduces clutter for other users.\nIf you believe your message " + \
-                           "was deleted in error, please contact this bot's author: Verlieren#9842"
+                           "was deleted in error, please contact this bot's author: mindphaser#9842"
             restricted = self.config.get("General", "restricted_users")
 
             if isinstance(message.channel, discord.TextChannel):
